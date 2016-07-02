@@ -31,6 +31,10 @@ public class ChatClientNetworkingManager extends Thread{
 		server.start();
 	}
 
+	public String getSender()
+	{
+		return server.getConnectionIP();
+	}
 
 	public void sendMessage(String message, String ip, int port)
 	{
@@ -65,6 +69,8 @@ public class ChatClientNetworkingManager extends Thread{
 
 	private class Server extends Thread
 	{
+		public Socket connection;
+
 		public Server()
 		{
 			initNewServerSocket();
@@ -80,7 +86,6 @@ public class ChatClientNetworkingManager extends Thread{
 		}
 		public void run()
 		{
-			Socket connection;
 			try{
 				while((connection = serverSocket.accept()) != null)
 				{
@@ -95,6 +100,10 @@ public class ChatClientNetworkingManager extends Thread{
 				System.err.println("Server failed to form a connection");
 				e.printStackTrace();
 			}
+		}
+		public String getConnectionIP()
+		{
+			return connection.getLocalAddress().getHostName();
 		}
 	}
 }

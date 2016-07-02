@@ -192,7 +192,7 @@ public class ChatClientGUI extends JFrame implements MessageHandler {
 	@Override
 	public void handleMessage(String message)
 	{
-		printMessage(".::Guest::. \n", false);
+		printMessage(".::Guest:" + netMan.getSender() + "::. \n", false);
 		printMessage(message + "\n\n", false);
 	}
 }
