@@ -6,15 +6,18 @@ import java.awt.event.*;
 public class ChatClientGUI extends JFrame implements MessageHandler {
 	private final Dimension WINDOW_SIZE = new Dimension(640, 800);
 	private final Dimension PORT_INFO_SIZE = new Dimension(640, 20);
-	private final int MAX_MESSAGE_SIZE = 90;
+	private final int MAX_MESSAGE_SIZE = 512;
+	private final int MAX_MESSAGE_LINE_LENGTH = 87;
 
 	ChatClientNetworkingManager netMan;
 
 	JTextPane chatArea;
-	StyledDocument styleDoc;
-	StyleContext context = new StyleContext();
+	StyledDocument styleDoc; //Styled Doc of chatArea used to insert Strings using Styles
+
 	Style defaultStyle;
+	Style nameRight;
 	Style right;
+	Style nameLeft;
 	Style left;
 
 	JTextArea inputMessageArea;
@@ -29,7 +32,7 @@ public class ChatClientGUI extends JFrame implements MessageHandler {
 	public ChatClientGUI()
 	{
 		//Set up Frame
-		setTitle("Basic Chat Client v0.1");
+		setTitle("Basic Chat Client v1");
 		setMinimumSize(WINDOW_SIZE);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		JPanel panel = new JPanel();
@@ -49,25 +52,26 @@ public class ChatClientGUI extends JFrame implements MessageHandler {
 		setVisible(true);
 	}
 
-	public void printMessage(String message, Boolean ourMessage)
+	//prints message on the Right side of the chatArea if rightAlignment is true
+	//and Left side of the chatArea if it's false
+	public void printMessage(String message, Boolean rightAlignment)
 	{
-		try {
-			int currentLength = styleDoc.getLength();
-			int messageLength = message.length();
-			if(ourMessage)
-			{
-				styleDoc.setLogicalStyle(currentLength, right);
-				styleDoc.insertString(currentLength, message, right);
-			}
-			else
-			{
-				styleDoc.setLogicalStyle(currentLength, left);
-				styleDoc.insertString(currentLength, message, left);
-			}
-		} catch (BadLocationException e) {
-			System.err.println("Printed to Bad location");
-		}
+		if(rightAlignment)
+			printMessage(message, right);
+		else
+			printMessage(message, left);
+	}
 
+	//Prints message in ChatArea using Style provided
+	public void printMessage(String message, Style style)
+	{
+		int currentLength = styleDoc.getLength();
+		try {
+			styleDoc.setLogicalStyle(currentLength, style);
+			styleDoc.insertString(currentLength, message, style);
+		} catch(BadLocationException e){
+			System.err.print("Printed to Bad location in PrintMessage method\n");
+		}
 	}
 
 	//Private Class to Hold top IP and Port Information
@@ -144,7 +148,6 @@ public class ChatClientGUI extends JFrame implements MessageHandler {
 			chatArea = new JTextPane();
 			JScrollPane scroll = new JScrollPane(chatArea);
 			styleDoc = chatArea.getStyledDocument();
-			context = StyleContext.getDefaultStyleContext();
 
 			//Adjust Component settings
 			chatArea.setEditable(false);
@@ -182,45 +185,69 @@ public class ChatClientGUI extends JFrame implements MessageHandler {
 			inputMessageArea.getInputMap().put(KeyStroke.getKeyStroke("ENTER"), new InputMessageAreaActionListener());
 
 			//Set up Style Stuff
-			defaultStyle = context.getStyle(StyleContext.DEFAULT_STYLE);
+			defaultStyle = StyleContext.getDefaultStyleContext().getStyle(StyleContext.DEFAULT_STYLE);
 			left = styleDoc.addStyle("left", defaultStyle);
-			StyleConstants.setAlignment(left, StyleConstants.ALIGN_LEFT);
 			right = styleDoc.addStyle("right", defaultStyle);
+			nameLeft = styleDoc.addStyle("nameLeft", left);
+			nameRight = styleDoc.addStyle("nameRIght", right);
+			StyleConstants.setAlignment(left, StyleConstants.ALIGN_LEFT);
 			StyleConstants.setAlignment(right, StyleConstants.ALIGN_RIGHT);
+			StyleConstants.setForeground(nameLeft, Color.RED);
+			StyleConstants.setForeground(nameRight, Color.BLUE);
+			StyleConstants.setBold(nameLeft, true);
+			StyleConstants.setBold(nameRight, true);
 
 			//Add components
 			add(inputMessageArea);
 		}
 
+		//Cuts message down to MAX_MESSAGE_SIZE
+		//Splits message into lines no larger than MAX_MESSAGE_LINE_SIZE
+		public String formatMessage(String message)
+		{
+			//remove whitespace and cut message down to MAX_MESSAGE_SIZE
+			message = message.trim();
+			if(message.length() > MAX_MESSAGE_SIZE)
+				message = message.substring(0, MAX_MESSAGE_SIZE);
+
+			//Add a newline character after every MAX_MESSAGE_LINE_LENGTH characters
+			String result = "";  
+			int currentIndex = 0;
+			while(message.length() - currentIndex > MAX_MESSAGE_LINE_LENGTH)
+			{
+				result += message.substring(currentIndex, currentIndex + MAX_MESSAGE_LINE_LENGTH);
+				result += "\n";
+				currentIndex += MAX_MESSAGE_LINE_LENGTH;
+			}
+			result += message.substring(currentIndex, message.length());
+
+			return result;
+		}
 
 		//Listener for inputMessageArea to send a message every time you press ENTER
 		private class InputMessageAreaActionListener extends AbstractAction
 		{
 			public void actionPerformed(ActionEvent e)
 			{
-
 				String message = inputMessageArea.getText();
 				inputMessageArea.setText("");
-				printMessage(".::You::.\n", true);
-				String subString;
-				int currentIndex = 0;
-				while(message.length() - currentIndex > MAX_MESSAGE_SIZE)
-				{
-					subString = message.substring(currentIndex, currentIndex + MAX_MESSAGE_SIZE);
-					currentIndex += MAX_MESSAGE_SIZE;
-					printMessage(subString + "\n", true);
-				}
-				subString = message.substring(currentIndex, message.length());
-				printMessage(subString + "\n\n", true);
-
-				netMan.sendMessage(message, iPField.getText(), Integer.parseInt(outgoingPortField.getText()));
+				String formattedMessage = formatMessage(message);
+				if(formattedMessage.isEmpty())
+					return;
+				printName(true);
+				printMessage(formattedMessage + "\n\n", true);
+				netMan.sendMessage(formattedMessage, iPField.getText(), Integer.parseInt(outgoingPortField.getText()));
 			}
 		}
 	}
+	//Print Name using nameRight and or nameLeft styles
 	@Override
-	public void printName()
+	public void printName(Boolean isYou)
 	{
-		printMessage(".::Guest:" + netMan.getSender() + "::. \n", false);
+		if(isYou)
+			printMessage(".::You::.\n", nameRight);
+		else
+			printMessage(".::" + netMan.getSender() + "::. \n", nameLeft);
 	}
 
 	@Override

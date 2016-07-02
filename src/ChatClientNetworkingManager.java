@@ -68,24 +68,8 @@ public class ChatClientNetworkingManager extends Thread{
 			try {
 				connection = new Socket(ip, port);
 				PrintWriter writer = new PrintWriter(connection.getOutputStream());
-				int messageCharsSent = 0;
-				while(messageCharsSent < message.length())
-				{
-					if(message.length() - messageCharsSent > MAX_MESSAGE_LENGTH)
-					{
-						writer.write(message, messageCharsSent, MAX_MESSAGE_LENGTH);
-						messageCharsSent += MAX_MESSAGE_LENGTH;
-						writer.println();
-						writer.flush();
-
-					}
-					else
-					{
-						writer.write(message, messageCharsSent, message.length() - messageCharsSent);
-						messageCharsSent += message.length() -messageCharsSent;
-					}
-				}
-				writer.print("\n");
+				writer.println(message);
+				writer.println();
 				writer.flush();
 				connection.close();
 			} catch (IOException e) {
@@ -120,7 +104,7 @@ public class ChatClientNetworkingManager extends Thread{
 				{
 					BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 					String message;
-					messageHandler.printName();
+					messageHandler.printName(false);
 					while((message = reader.readLine()) != null)
 					{
 						messageHandler.handleMessage(message);

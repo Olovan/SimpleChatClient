@@ -1,4 +1,4 @@
 interface MessageHandler{
 	void handleMessage(String message);
-	void printName();
+	void printName(Boolean isYou);
 }
