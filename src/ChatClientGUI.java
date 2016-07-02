@@ -12,6 +12,7 @@ public class ChatClientGUI extends JFrame implements MessageHandler {
 	ChatClientNetworkingManager netMan;
 
 	JTextPane chatArea;
+	JScrollPane scroll;
 	StyledDocument styleDoc; //Styled Doc of chatArea used to insert Strings using Styles
 
 	Style defaultStyle;
@@ -146,7 +147,7 @@ public class ChatClientGUI extends JFrame implements MessageHandler {
 
 			//Instantiate Components
 			chatArea = new JTextPane();
-			JScrollPane scroll = new JScrollPane(chatArea);
+			scroll = new JScrollPane(chatArea);
 			styleDoc = chatArea.getStyledDocument();
 
 			//Adjust Component settings
@@ -245,5 +246,6 @@ public class ChatClientGUI extends JFrame implements MessageHandler {
 	public void handleMessage(String message)
 	{
 		printMessage(message + "\n", false);
+		chatArea.setCaretPosition(chatArea.getDocument().getLength());
 	}
 }
