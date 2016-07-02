@@ -103,7 +103,7 @@ public class ChatClientNetworkingManager extends Thread{
 		}
 		public String getConnectionIP()
 		{
-			return connection.getLocalAddress().getHostName();
+			return connection.getInetAddress().getHostName();
 		}
 	}
 }
