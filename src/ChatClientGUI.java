@@ -133,10 +133,11 @@ public class ChatClientGUI extends JFrame implements MessageHandler {
 			chatArea = new JTextPane();
 			chatArea.setEditable(false);
 			chatArea.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+			JScrollPane scroll = new JScrollPane(chatArea);
 			styleDoc = chatArea.getStyledDocument();
 			context = StyleContext.getDefaultStyleContext();
 
-			add(chatArea);
+			add(scroll);
 		}
 	}
 	private class MessagePanel extends JPanel 
