@@ -74,7 +74,7 @@ public class ChatClientNetworkingManager extends Thread{
 				connection.close();
 			} catch (IOException e) {
 				System.err.println("Failed to send Message to: " + ip + ":" + port);
-				e.printStackTrace();
+				System.err.println(e.getLocalizedMessage());
 			}
 		}
 	}

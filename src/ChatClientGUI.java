@@ -157,6 +157,9 @@ public class ChatClientGUI extends JFrame implements MessageHandler {
 			scroll.setMaximumSize(CHAT_MIN_SIZE);
 			scroll.setPreferredSize(CHAT_MIN_SIZE);
 			scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+			DefaultCaret caret = new DefaultCaret();
+			chatArea.setCaret(caret);
+			caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE); //Make it always scroll to the bottom
 
 			add(scroll);
 		}
