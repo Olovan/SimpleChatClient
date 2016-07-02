@@ -43,6 +43,7 @@ public class ChatClientNetworkingManager extends Thread{
 
 	private class Messenger extends Thread
 	{
+		private final int MAX_MESSAGE_LENGTH = 100;
 		String message;
 		String ip;
 		int port;
@@ -57,7 +58,13 @@ public class ChatClientNetworkingManager extends Thread{
 			try {
 				connection = new Socket(ip, port);
 				PrintWriter writer = new PrintWriter(connection.getOutputStream());
-				writer.println(message);
+				int messageCharsSent = 0;
+				while(messageCharsSent < message.length())
+				{
+					writer.write(message, messageCharsSent, MAX_MESSAGE_LENGTH);
+					messageCharsSent += MAX_MESSAGE_LENGTH;
+				}
+				writer.print("\n");
 				writer.flush();
 				connection.close();
 			} catch (IOException e) {
