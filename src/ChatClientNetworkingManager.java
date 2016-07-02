@@ -52,6 +52,9 @@ public class ChatClientNetworkingManager extends Thread{
 		new Messenger(message, ip, port).start();
 	}
 
+	//PRIVATE CLASSES
+	//Messenger Class Sends outgoing Messages
+	//Server class receives and proccesses Messages
 	private class Messenger extends Thread
 	{
 		String message;
@@ -78,7 +81,6 @@ public class ChatClientNetworkingManager extends Thread{
 			}
 		}
 	}
-
 	private class Server extends Thread
 	{
 		public Socket connection;

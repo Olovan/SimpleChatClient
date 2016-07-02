@@ -7,7 +7,7 @@ public class ChatClientGUI extends JFrame implements MessageHandler {
 	private final Dimension WINDOW_SIZE = new Dimension(640, 800);
 	private final Dimension PORT_INFO_SIZE = new Dimension(640, 20);
 	private final int MAX_MESSAGE_SIZE = 512;
-	private final int MAX_MESSAGE_LINE_LENGTH = 87;
+	//private final int MAX_MESSAGE_LINE_LENGTH = 87; No longer needed as line wrapping mysteriously decided to turn on
 
 	ChatClientNetworkingManager netMan;
 
@@ -152,9 +152,7 @@ public class ChatClientGUI extends JFrame implements MessageHandler {
 			//Adjust Component settings
 			chatArea.setEditable(false);
 			chatArea.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-			chatArea.setMaximumSize(CHAT_MIN_SIZE);
 			chatArea.setPreferredSize(CHAT_MIN_SIZE);
-			scroll.setMaximumSize(CHAT_MIN_SIZE);
 			scroll.setPreferredSize(CHAT_MIN_SIZE);
 			scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 			DefaultCaret caret = new DefaultCaret();
@@ -175,7 +173,6 @@ public class ChatClientGUI extends JFrame implements MessageHandler {
 			//Set Panel Settings
 			setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 			setMinimumSize(MESSAGE_MIN_SIZE);
-			setMaximumSize(MESSAGE_MAX_SIZE);
 			setPreferredSize(MESSAGE_MIN_SIZE);
 
 			//Instantiate
@@ -183,6 +180,9 @@ public class ChatClientGUI extends JFrame implements MessageHandler {
 			inputMessageArea.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 			inputMessageArea.setLineWrap(true);
 			inputMessageArea.setWrapStyleWord(false);
+
+			//Component Settings
+			inputMessageArea.setPreferredSize(new Dimension(620, 200));
 
 			//Set up Listeners
 			inputMessageArea.getInputMap().put(KeyStroke.getKeyStroke("ENTER"), new InputMessageAreaActionListener());
@@ -205,24 +205,12 @@ public class ChatClientGUI extends JFrame implements MessageHandler {
 		}
 
 		//Cuts message down to MAX_MESSAGE_SIZE
-		//Splits message into lines no larger than MAX_MESSAGE_LINE_SIZE
 		public String formatMessage(String message)
 		{
 			//remove whitespace and cut message down to MAX_MESSAGE_SIZE
-			message = message.trim();
-			if(message.length() > MAX_MESSAGE_SIZE)
-				message = message.substring(0, MAX_MESSAGE_SIZE);
-
-			//Add a newline character after every MAX_MESSAGE_LINE_LENGTH characters
-			String result = "";  
-			int currentIndex = 0;
-			while(message.length() - currentIndex > MAX_MESSAGE_LINE_LENGTH)
-			{
-				result += message.substring(currentIndex, currentIndex + MAX_MESSAGE_LINE_LENGTH);
-				result += "\n";
-				currentIndex += MAX_MESSAGE_LINE_LENGTH;
-			}
-			result += message.substring(currentIndex, message.length());
+			String result = message.trim();
+			if(result.length() > MAX_MESSAGE_SIZE)
+				result = result.substring(0, MAX_MESSAGE_SIZE);
 
 			return result;
 		}
