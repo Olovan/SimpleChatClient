@@ -6,6 +6,7 @@ import java.awt.event.*;
 public class ChatClientGUI extends JFrame implements MessageHandler {
 	private final Dimension WINDOW_SIZE = new Dimension(640, 800);
 	private final Dimension PORT_INFO_SIZE = new Dimension(640, 20);
+	private final int MAX_MESSAGE_SIZE = 90;
 
 	ChatClientNetworkingManager netMan;
 
@@ -44,6 +45,7 @@ public class ChatClientGUI extends JFrame implements MessageHandler {
 		//Initialize Network Manager
 		netMan = new ChatClientNetworkingManager(this, Integer.parseInt(incomingPortField.getText()));
 
+		pack();
 		setVisible(true);
 	}
 
@@ -115,6 +117,12 @@ public class ChatClientGUI extends JFrame implements MessageHandler {
 			add(Box.createHorizontalStrut(5));
 			add(outgoingPortField);
 		}
+
+		//Button Listener for "LISTEN" button
+		public void actionPerformed(ActionEvent e)
+		{
+			netMan.initListeningServer(Integer.parseInt(incomingPortField.getText()));
+		}
 	}
 
 	private class ChatPanel extends JPanel
@@ -131,11 +139,18 @@ public class ChatClientGUI extends JFrame implements MessageHandler {
 
 			//Instantiate Components
 			chatArea = new JTextPane();
-			chatArea.setEditable(false);
-			chatArea.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 			JScrollPane scroll = new JScrollPane(chatArea);
 			styleDoc = chatArea.getStyledDocument();
 			context = StyleContext.getDefaultStyleContext();
+
+			//Adjust Component settings
+			chatArea.setEditable(false);
+			chatArea.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+			chatArea.setMaximumSize(CHAT_MIN_SIZE);
+			chatArea.setPreferredSize(CHAT_MIN_SIZE);
+			scroll.setMaximumSize(CHAT_MIN_SIZE);
+			scroll.setPreferredSize(CHAT_MIN_SIZE);
+			scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
 			add(scroll);
 		}
@@ -157,6 +172,8 @@ public class ChatClientGUI extends JFrame implements MessageHandler {
 			//Instantiate
 			inputMessageArea = new JTextArea();
 			inputMessageArea.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+			inputMessageArea.setLineWrap(true);
+			inputMessageArea.setWrapStyleWord(false);
 
 			//Set up Listeners
 			inputMessageArea.getInputMap().put(KeyStroke.getKeyStroke("ENTER"), new InputMessageAreaActionListener());
@@ -182,17 +199,30 @@ public class ChatClientGUI extends JFrame implements MessageHandler {
 				String message = inputMessageArea.getText();
 				inputMessageArea.setText("");
 				printMessage(".::You::.\n", true);
-				printMessage(message + "\n\n", true);
+				String subString;
+				int currentIndex = 0;
+				while(message.length() - currentIndex > MAX_MESSAGE_SIZE)
+				{
+					subString = message.substring(currentIndex, currentIndex + MAX_MESSAGE_SIZE);
+					currentIndex += MAX_MESSAGE_SIZE;
+					printMessage(subString + "\n", true);
+				}
+				subString = message.substring(currentIndex, message.length());
+				printMessage(subString + "\n\n", true);
 
 				netMan.sendMessage(message, iPField.getText(), Integer.parseInt(outgoingPortField.getText()));
 			}
 		}
 	}
+	@Override
+	public void printName()
+	{
+		printMessage(".::Guest:" + netMan.getSender() + "::. \n", false);
+	}
 
 	@Override
 	public void handleMessage(String message)
 	{
-		printMessage(".::Guest:" + netMan.getSender() + "::. \n", false);
-		printMessage(message + "\n\n", false);
+		printMessage(message + "\n", false);
 	}
 }

@@ -3,6 +3,7 @@ import java.net.Socket;
 import java.net.ServerSocket;
 
 public class ChatClientNetworkingManager extends Thread{
+	private final int MAX_MESSAGE_LENGTH = 90;
 
 	MessageHandler messageHandler; //Interface to communicate with GUI
 
@@ -43,7 +44,6 @@ public class ChatClientNetworkingManager extends Thread{
 
 	private class Messenger extends Thread
 	{
-		private final int MAX_MESSAGE_LENGTH = 100;
 		String message;
 		String ip;
 		int port;
@@ -64,8 +64,10 @@ public class ChatClientNetworkingManager extends Thread{
 					if(message.length() - messageCharsSent > MAX_MESSAGE_LENGTH)
 					{
 						writer.write(message, messageCharsSent, MAX_MESSAGE_LENGTH);
-						writer.print("\n");
 						messageCharsSent += MAX_MESSAGE_LENGTH;
+						writer.println();
+						writer.flush();
+						
 					}
 					else
 					{
@@ -107,6 +109,7 @@ public class ChatClientNetworkingManager extends Thread{
 				{
 					BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 					String message;
+					messageHandler.printName();
 					while((message = reader.readLine()) != null)
 					{
 						messageHandler.handleMessage(message);
