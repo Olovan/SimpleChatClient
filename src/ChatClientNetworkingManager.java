@@ -127,8 +127,7 @@ public class ChatClientNetworkingManager extends Thread{
 					}
 				}
 			}catch (IOException e){
-				System.err.println("Server failed to form a connection");
-				e.printStackTrace();
+				System.err.println("Server Socket Closed");
 			}
 		}
 		public String getConnectionIP()
