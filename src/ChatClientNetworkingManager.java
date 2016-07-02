@@ -28,6 +28,16 @@ public class ChatClientNetworkingManager extends Thread{
 	public void initListeningServer(int listeningPort)
 	{
 		this.listeningPort = listeningPort;
+		//Shut down socket if it's already running
+		if(serverSocket != null)
+		{
+			try {
+				serverSocket.close();
+			} catch (IOException e) {
+				System.err.println("Couldn't close ServerSocket");
+			}
+		}
+
 		server = new Server();
 		server.start();
 	}
@@ -67,7 +77,7 @@ public class ChatClientNetworkingManager extends Thread{
 						messageCharsSent += MAX_MESSAGE_LENGTH;
 						writer.println();
 						writer.flush();
-						
+
 					}
 					else
 					{
@@ -97,6 +107,7 @@ public class ChatClientNetworkingManager extends Thread{
 		{
 			try {
 				serverSocket = new ServerSocket(listeningPort);
+				System.out.println("Made new Server at Port: " + listeningPort);
 			} catch (IOException e){
 				System.err.println("Failed to Create Server Socket at Port: " + listeningPort);
 				e.printStackTrace();

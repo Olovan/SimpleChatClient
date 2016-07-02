@@ -71,7 +71,7 @@ public class ChatClientGUI extends JFrame implements MessageHandler {
 	}
 
 	//Private Class to Hold top IP and Port Information
-	private class PortInfoPanel extends JPanel
+	private class PortInfoPanel extends JPanel implements ActionListener
 	{
 		private final Dimension MAX_SIZE = new Dimension(6400, 25);
 		private final Dimension MAX_LISTEN_BUTTON_SIZE = new Dimension(80, 25);
@@ -106,6 +106,9 @@ public class ChatClientGUI extends JFrame implements MessageHandler {
 			incomingPortField.setPreferredSize(MAX_INCOMING_PORT_SIZE);
 			iPField.setPreferredSize(MAX_IP_SIZE);
 			outgoingPortField.setPreferredSize(MAX_OUTGOING_PORT_SIZE);
+
+			//Add Listeners
+			listenButton.addActionListener(this);
 
 
 			//Add items
