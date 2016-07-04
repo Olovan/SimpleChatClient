@@ -6,6 +6,13 @@ import java.awt.event.*;
 public class ChatClientGUI extends JFrame implements MessageHandler {
 	private final Dimension WINDOW_SIZE = new Dimension(640, 800);
 	private final Dimension PORT_INFO_SIZE = new Dimension(640, 20);
+	private final Color BACKGROUND_COLOR = Color.decode("#0D1926");
+	private final Color TEXT_BACKGROUND_COLOR = Color.decode("#3D4651");
+	private final Color TEXT_FOREGROUND_COLOR = Color.decode("#CED1D3");
+	private final Color BORDER_COLOR = Color.decode("#000000");
+	private final Color BUTTON_BACKGROUND_COLOR = Color.decode("#9EA3A8");
+	private final Color USERNAME_COLOR = Color.decode("#9600FF");
+	private final Color GUEST_USERNAME_COLOR = Color.decode("#BAC707");
 	private final int MAX_MESSAGE_SIZE = 512;
 	//private final int MAX_MESSAGE_LINE_LENGTH = 87; No longer needed as line wrapping mysteriously decided to turn on
 
@@ -39,6 +46,7 @@ public class ChatClientGUI extends JFrame implements MessageHandler {
 		JPanel panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 		panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+		panel.setBackground(BACKGROUND_COLOR);
 		setContentPane(panel);
 
 		//Add stuff
@@ -91,6 +99,7 @@ public class ChatClientGUI extends JFrame implements MessageHandler {
 			setMinimumSize(PORT_INFO_SIZE);
 			setPreferredSize(PORT_INFO_SIZE);
 			setMaximumSize(new Dimension(6400, 25));
+			setBackground(BACKGROUND_COLOR);
 
 			//Instantiate
 			listenButton = new JButton("Listen");
@@ -111,6 +120,17 @@ public class ChatClientGUI extends JFrame implements MessageHandler {
 			incomingPortField.setPreferredSize(MAX_INCOMING_PORT_SIZE);
 			iPField.setPreferredSize(MAX_IP_SIZE);
 			outgoingPortField.setPreferredSize(MAX_OUTGOING_PORT_SIZE);
+			incomingPortField.setBackground(TEXT_BACKGROUND_COLOR);
+			outgoingPortField.setBackground(TEXT_BACKGROUND_COLOR);
+			iPField.setBackground(TEXT_BACKGROUND_COLOR);
+			listenButton.setBackground(BUTTON_BACKGROUND_COLOR);
+			incomingPortField.setForeground(TEXT_FOREGROUND_COLOR);
+			outgoingPortField.setForeground(TEXT_FOREGROUND_COLOR);
+			iPField.setForeground(TEXT_FOREGROUND_COLOR);
+			incomingPortField.setBorder(BorderFactory.createLineBorder(BORDER_COLOR));
+			outgoingPortField.setBorder(BorderFactory.createLineBorder(BORDER_COLOR));
+			iPField.setBorder(BorderFactory.createLineBorder(BORDER_COLOR));
+
 
 			//Add Listeners
 			listenButton.addActionListener(this);
@@ -144,6 +164,7 @@ public class ChatClientGUI extends JFrame implements MessageHandler {
 			setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 			setMinimumSize(CHAT_MIN_SIZE);
 			setBorder(BorderFactory.createEmptyBorder(5,0,5,0));
+			setBackground(BACKGROUND_COLOR);
 
 			//Instantiate Components
 			chatArea = new JTextPane();
@@ -152,10 +173,13 @@ public class ChatClientGUI extends JFrame implements MessageHandler {
 
 			//Adjust Component settings
 			chatArea.setEditable(false);
-			chatArea.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+			chatArea.setBorder(BorderFactory.createLineBorder(BORDER_COLOR));
 			chatArea.setPreferredSize(CHAT_MIN_SIZE);
+			chatArea.setBackground(TEXT_BACKGROUND_COLOR);
+			chatArea.setForeground(TEXT_FOREGROUND_COLOR);
 			scroll.setPreferredSize(CHAT_MIN_SIZE);
 			scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+			scroll.setBorder(BorderFactory.createEmptyBorder());
 			DefaultCaret caret = new DefaultCaret();
 			chatArea.setCaret(caret);
 			caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE); //Make it always scroll to the bottom
@@ -175,15 +199,18 @@ public class ChatClientGUI extends JFrame implements MessageHandler {
 			setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 			setMinimumSize(MESSAGE_MIN_SIZE);
 			setPreferredSize(MESSAGE_MIN_SIZE);
+			setBackground(BACKGROUND_COLOR);
 
 			//Instantiate
 			inputMessageArea = new JTextArea();
-			inputMessageArea.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 			inputMessageArea.setLineWrap(true);
 			inputMessageArea.setWrapStyleWord(false);
 
 			//Component Settings
 			inputMessageArea.setPreferredSize(new Dimension(620, 200));
+			inputMessageArea.setBackground(TEXT_BACKGROUND_COLOR);
+			inputMessageArea.setForeground(TEXT_FOREGROUND_COLOR);
+			inputMessageArea.setBorder(BorderFactory.createLineBorder(BORDER_COLOR));
 
 			//Set up Listeners
 			inputMessageArea.getInputMap().put(KeyStroke.getKeyStroke("ENTER"), new InputMessageAreaActionListener());
@@ -196,8 +223,10 @@ public class ChatClientGUI extends JFrame implements MessageHandler {
 			nameRight = styleDoc.addStyle("nameRIght", right);
 			StyleConstants.setAlignment(left, StyleConstants.ALIGN_LEFT);
 			StyleConstants.setAlignment(right, StyleConstants.ALIGN_RIGHT);
-			StyleConstants.setForeground(nameLeft, Color.RED);
-			StyleConstants.setForeground(nameRight, Color.BLUE);
+			StyleConstants.setForeground(left, TEXT_FOREGROUND_COLOR);
+			StyleConstants.setForeground(right, TEXT_FOREGROUND_COLOR);
+			StyleConstants.setForeground(nameLeft, GUEST_USERNAME_COLOR);
+			StyleConstants.setForeground(nameRight, USERNAME_COLOR);
 			StyleConstants.setBold(nameLeft, true);
 			StyleConstants.setBold(nameRight, true);
 
@@ -232,6 +261,7 @@ public class ChatClientGUI extends JFrame implements MessageHandler {
 			}
 		}
 	}
+
 	//Print Name using nameRight and or nameLeft styles
 	@Override
 	public void printName(Boolean isYou)
