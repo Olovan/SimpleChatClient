@@ -1,9 +1,13 @@
 import java.io.*;
 import java.net.Socket;
 import java.net.ServerSocket;
+import java.security.*;
+import javax.crypto.*;
+import javax.crypto.spec.*;
 
 public class ChatClientNetworkingManager extends Thread{
 	private final int MAX_MESSAGE_LENGTH = 90;
+	private final String KEY = "lXEIJkNKIk2kfaBv";
 
 	MessageHandler messageHandler; //Interface to communicate with GUI
 
@@ -57,22 +61,32 @@ public class ChatClientNetworkingManager extends Thread{
 	//Server class receives and proccesses Messages
 	private class Messenger extends Thread
 	{
+		Cipher cipher;
 		String message;
 		String ip;
 		int port;
 		public Messenger(String message, String ip, int port)
 		{
-			this.message = message;
-			this.ip = ip;
-			this.port = port;
+			try {
+				this.message = message + "\n";
+				this.ip = ip;
+				this.port = port;
+				cipher = Cipher.getInstance("AES");
+				byte[] keyBytes = KEY.getBytes();
+				SecretKeySpec keySpec = new SecretKeySpec(keyBytes, "AES");
+				cipher.init(Cipher.ENCRYPT_MODE, keySpec);
+
+			} catch(Exception e){
+				e.printStackTrace();
+			}
 		}
 		public void run()
 		{
 			try {
 				connection = new Socket(ip, port);
-				PrintWriter writer = new PrintWriter(connection.getOutputStream());
-				writer.println(message);
-				writer.println();
+				DataOutputStream writer = new DataOutputStream(connection.getOutputStream());
+				byte[] encryptedBytes = encrypt(message);
+				writer.write(encryptedBytes, 0, encryptedBytes.length);
 				writer.flush();
 				connection.close();
 			} catch (IOException e) {
@@ -80,13 +94,33 @@ public class ChatClientNetworkingManager extends Thread{
 				System.err.println(e.getLocalizedMessage());
 			}
 		}
+		private byte[] encrypt(String inputString)
+		{
+			byte[] encryptedBytes = null;
+			try {
+				encryptedBytes = cipher.doFinal(inputString.getBytes());
+			} catch (Exception e) {
+				System.err.println("encrypt method failed");
+			}
+			return encryptedBytes;
+		}
 	}
 	private class Server extends Thread
 	{
 		public Socket connection;
+		private Cipher cipher;
 
 		public Server()
 		{
+			//Set up Crypto stuff
+			try {
+				cipher = Cipher.getInstance("AES");
+				byte[] keyBytes = KEY.getBytes();
+				SecretKeySpec keySpec = new SecretKeySpec(keyBytes, "AES");
+				cipher.init(Cipher.DECRYPT_MODE, keySpec);
+			} catch(Exception e){
+				e.printStackTrace();
+			}
 			initNewServerSocket();
 		}
 		public void initNewServerSocket()
@@ -104,17 +138,34 @@ public class ChatClientNetworkingManager extends Thread{
 			try{
 				while((connection = serverSocket.accept()) != null)
 				{
-					BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-					String message;
+					DataInputStream reader = new DataInputStream(connection.getInputStream());
+					byte[] encryptedInput = new byte[16 * 513]; //Able to hold max string size
+					String decryptedMessage;
 					messageHandler.printName(false);
-					while((message = reader.readLine()) != null)
+					int lengthRead = reader.read(encryptedInput);
+					byte[] formattedBytes = new byte[lengthRead]; //Contains correctly sized array so encryption algorithm doesn't get cranky
+					for(int i = 0; i < lengthRead; i++)
 					{
-						messageHandler.handleMessage(message);
+						formattedBytes[i] = encryptedInput[i];
 					}
+					decryptedMessage = decrypt(formattedBytes);
+					messageHandler.handleMessage(decryptedMessage);
 				}
 			}catch (IOException e){
+				e.printStackTrace();
 				System.err.println("Server Socket Closed");
 			}
+		}
+		public String decrypt(byte[] encryptedBytes)
+		{
+			byte[] decryptedBytes = null;
+			try {
+				decryptedBytes = cipher.doFinal(encryptedBytes);
+			} catch (Exception e) {
+				System.err.println("decrypt method failed");
+				e.printStackTrace();
+			}
+			return new String(decryptedBytes);
 		}
 		public String getConnectionIP()
 		{
