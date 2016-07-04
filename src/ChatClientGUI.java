@@ -6,6 +6,7 @@ import java.awt.event.*;
 public class ChatClientGUI extends JFrame implements MessageHandler {
 	private final Dimension WINDOW_SIZE = new Dimension(640, 800);
 	private final Dimension PORT_INFO_SIZE = new Dimension(640, 20);
+
 	private final Color BACKGROUND_COLOR = Color.decode("#0D1926");
 	private final Color TEXT_BACKGROUND_COLOR = Color.decode("#3D4651");
 	private final Color TEXT_FOREGROUND_COLOR = Color.decode("#CED1D3");
@@ -13,8 +14,8 @@ public class ChatClientGUI extends JFrame implements MessageHandler {
 	private final Color BUTTON_BACKGROUND_COLOR = Color.decode("#9EA3A8");
 	private final Color USERNAME_COLOR = Color.decode("#9600FF");
 	private final Color GUEST_USERNAME_COLOR = Color.decode("#BAC707");
+
 	private final int MAX_MESSAGE_SIZE = 512;
-	//private final int MAX_MESSAGE_LINE_LENGTH = 87; No longer needed as line wrapping mysteriously decided to turn on
 
 	ChatClientNetworkingManager netMan;
 
@@ -156,7 +157,6 @@ public class ChatClientGUI extends JFrame implements MessageHandler {
 	private class ChatPanel extends JPanel
 	{
 		private final Dimension CHAT_MIN_SIZE = new Dimension(640, 500);
-		//private final Dimension CHAT_MAX_SIZE = new Dimension(640, 500);
 
 		public ChatPanel()
 		{
