@@ -6,7 +6,7 @@ import javax.crypto.*;
 import javax.crypto.spec.*;
 
 public class ChatClientNetworkingManager extends Thread{
-	private final int MAX_MESSAGE_LENGTH = 90;
+	private final int MAX_MESSAGE_LENGTH = 512;
 	private final String KEY = "lXEIJkNKIk2kfaBv";
 
 	MessageHandler messageHandler; //Interface to communicate with GUI
@@ -56,9 +56,10 @@ public class ChatClientNetworkingManager extends Thread{
 		new Messenger(message, ip, port).start();
 	}
 
-	//PRIVATE CLASSES
+	
+
+
 	//Messenger Class Sends outgoing Messages
-	//Server class receives and proccesses Messages
 	private class Messenger extends Thread
 	{
 		Cipher cipher;
@@ -105,6 +106,11 @@ public class ChatClientNetworkingManager extends Thread{
 			return encryptedBytes;
 		}
 	}
+
+
+
+
+	//Server class receives and proccesses Messages
 	private class Server extends Thread
 	{
 		public Socket connection;
@@ -135,11 +141,12 @@ public class ChatClientNetworkingManager extends Thread{
 		}
 		public void run()
 		{
+			//Stays open unless there's an error
 			try{
 				while((connection = serverSocket.accept()) != null)
 				{
 					DataInputStream reader = new DataInputStream(connection.getInputStream());
-					byte[] encryptedInput = new byte[16 * 513]; //Able to hold max string size
+					byte[] encryptedInput = new byte[MAX_MESSAGE_LENGTH/16 + 16]; //Able to hold max string size 512 characters + \n
 					String decryptedMessage;
 					messageHandler.printName(false);
 					int lengthRead = reader.read(encryptedInput);
