@@ -1,0 +1,3 @@
+Main-Class: ChatClientDriver
+Class-Path: bin/
+
