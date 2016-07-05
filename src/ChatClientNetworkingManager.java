@@ -146,7 +146,7 @@ public class ChatClientNetworkingManager extends Thread{
 				while((connection = serverSocket.accept()) != null)
 				{
 					DataInputStream reader = new DataInputStream(connection.getInputStream());
-					byte[] encryptedInput = new byte[MAX_MESSAGE_LENGTH/16 + 16]; //Able to hold max string size 512 characters + \n
+					byte[] encryptedInput = new byte[MAX_MESSAGE_LENGTH + 16]; //Able to hold max string size 512 characters + \n
 					String decryptedMessage;
 					messageHandler.printName(false);
 					int lengthRead = reader.read(encryptedInput);

@@ -7,13 +7,13 @@ public class ChatClientGUI extends JFrame implements MessageHandler {
 	private final Dimension WINDOW_SIZE = new Dimension(640, 800);
 	private final Dimension PORT_INFO_SIZE = new Dimension(640, 20);
 
-	private final Color BACKGROUND_COLOR = Color.decode("#0D1926");
-	private final Color TEXT_BACKGROUND_COLOR = Color.decode("#3D4651");
-	private final Color TEXT_FOREGROUND_COLOR = Color.decode("#CED1D3");
+	private final Color BACKGROUND_COLOR = Color.decode("#1F2D39");
+	private final Color TEXT_BACKGROUND_COLOR = Color.decode("#181B1E");
+	private final Color TEXT_FOREGROUND_COLOR = Color.decode("#C99815");
 	private final Color BORDER_COLOR = Color.decode("#000000");
 	private final Color BUTTON_BACKGROUND_COLOR = Color.decode("#9EA3A8");
-	private final Color USERNAME_COLOR = Color.decode("#9600FF");
-	private final Color GUEST_USERNAME_COLOR = Color.decode("#BAC707");
+	private final Color USERNAME_COLOR = Color.decode("#056091");
+	private final Color GUEST_USERNAME_COLOR = Color.decode("#E53300");
 
 	private final int MAX_MESSAGE_SIZE = 512;
 
