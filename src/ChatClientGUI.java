@@ -189,8 +189,8 @@ public class ChatClientGUI extends JFrame implements MessageHandler {
 	}
 	private class MessagePanel extends JPanel 
 	{
-		private final Dimension MESSAGE_MIN_SIZE = new Dimension(640, 200);
-		private final Dimension MESSAGE_MAX_SIZE = new Dimension(6400, 200);
+		private final Dimension MESSAGE_MIN_SIZE = new Dimension(640, 100);
+		private final Dimension MESSAGE_MAX_SIZE = new Dimension(6400, 100);
 
 
 		public MessagePanel()
@@ -207,7 +207,8 @@ public class ChatClientGUI extends JFrame implements MessageHandler {
 			inputMessageArea.setWrapStyleWord(false);
 
 			//Component Settings
-			inputMessageArea.setPreferredSize(new Dimension(620, 200));
+			inputMessageArea.setPreferredSize(new Dimension(MESSAGE_MIN_SIZE.width - 20, MESSAGE_MIN_SIZE.height));
+			inputMessageArea.setMaximumSize(MESSAGE_MAX_SIZE);
 			inputMessageArea.setBackground(TEXT_BACKGROUND_COLOR);
 			inputMessageArea.setForeground(TEXT_FOREGROUND_COLOR);
 			inputMessageArea.setBorder(BorderFactory.createLineBorder(BORDER_COLOR));
